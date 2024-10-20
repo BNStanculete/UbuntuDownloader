@@ -59,7 +59,13 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
-    - name: Installing dependencies
+    - name: Install dependencies
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.5
+      with:
+        boost_version: 1.73.0
+
+    - name: Install GTest
       run: sudo apt-get update && sudo apt-get install libgtest-dev
 
     - name: Configuring for SHARED libraries

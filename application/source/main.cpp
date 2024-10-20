@@ -75,8 +75,8 @@ int main(int argc, char** argv) {
                     // For that we assume that the versions are split into subversions
                     // and that the MAJOR subversion is first, followed by MINOR , PATCH, etc.
 
-                    int version1 = 0, version2 = 0;
-                    int index = 0;
+                    uint32_t version1 = 0, version2 = 0;
+                    uint32_t index = 0;
 
                     while (index < latest_version.length()) {
                         if (latest_version[index] == '.') {
