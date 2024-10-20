@@ -1,0 +1,4 @@
+sphinx-needs >= 2.0.0
+sphinx-rtd-theme >= 2.0.0
+breathe >= 4.35.0
+sphinxcontrib-plantuml >= 0.27.0
