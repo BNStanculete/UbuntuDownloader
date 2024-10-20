@@ -1,0 +1,61 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+    - dev
+
+  pull_request:
+    branches:
+    - main
+    - dev
+
+jobs:
+  Precheck:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@master
+  
+    - name: Run cpplint
+      run: pip install cpplint && cpplint --extensions=in,cpp --recursive --quiet .
+
+  Build:
+    needs: Precheck
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: VS 2022,  os: windows-2022   }
+        - { name: VS 2019,  os: windows-2019   }
+        - { name: Linux,    os: ubuntu-latest  }
+        - { name: MacOS,    os: macos-latest   }
+
+    steps:
+    - uses: actions/checkout@master    
+
+    - name: Configure CMake for Debug
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug"
+
+    - name: Building executable in Debug mode
+      run: cmake --build ${{github.workspace}}/build --config Debug
+
+  Test:
+    needs: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Installing dependencies
+      run: sudo apt-get update && sudo apt-get install libgtest-dev
+
+    - name: Configuring for SHARED libraries
+      run: cmake -B ${{github.workspace}}/build -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug"
+
+    - name: Building SHARED libraries and tests
+      run: cmake --build ${{github.workspace}}/build --config Debug

@@ -1,0 +1,39 @@
+name: Deployment
+
+on:
+  merge:
+    branches:
+    - main
+
+jobs:
+  Build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: VS 2022,  os: windows-2022   }
+        - { name: VS 2019,  os: windows-2019   }
+        - { name: Linux,    os: ubuntu-latest  }
+        - { name: MacOS,    os: macos-latest   }
+
+    steps:
+    - uses: actions/checkout@master    
+
+    - name: Configure CMake for Debug
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE="Release"
+
+    - name: Building executable in Debug mode
+      run: cmake --build ${{github.workspace}}/build --config Release
+
+    - name: Publishing package
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{matrix.platform.name}}
+        path: |
+          ${{github.workspace}}/bin
+          ${{github.workspace}}/lib
+          ${{github.workspace}}/include
+          ${{github.workspace}}/docs
