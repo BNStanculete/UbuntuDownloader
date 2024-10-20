@@ -13,8 +13,6 @@ add_executable(UbuntuDownloader
     source/httpclient.cpp
 )
 
-configure_compiler(UbuntuDownloader)
-
 target_include_directories(
     UbuntuDownloader
 PRIVATE

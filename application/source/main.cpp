@@ -105,8 +105,8 @@ int main(int argc, char** argv) {
                             break;
                         }
 
-                        version1 = version1 * 10 + (latest_version[index] - '0');
-                        version2 = version2 * 10 + (version[index] - '0');
+                        version1 = version1 * 10 + (uint32_t)(latest_version[index] - '0');
+                        version2 = version2 * 10 + (uint32_t)(version[index] - '0');
                         index += 1;
                     }
 
