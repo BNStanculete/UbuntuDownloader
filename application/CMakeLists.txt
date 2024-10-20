@@ -2,11 +2,27 @@
 
 cmake_minimum_required(VERSION 3.11..3.22)
 
-create_library(
-    TARGET Dummy
-    TYPE SHARED
-    VERSION 1.0.0
-    MAJOR_VERSION 1
-    SOURCES "source/dummy.cpp"
-    HEADERS "include/dummy"
+set(EXECUTABLE_HEADERS include/dummy)
+
+foreach(HEADER ${EXECUTABLE_HEADERS})
+    configure_file(${HEADER}.hpp.in ${CMAKE_BINARY_DIR}/${HEADER}.hpp @ONLY)
+endforeach()
+
+add_executable(UbuntuDownloader
+    source/dummy.cpp
+)
+
+target_include_directories(
+    UbuntuDownloader
+PRIVATE
+    ${Boost_INCLUDE_DIR}
+    ${JSON_INC_PATH}
+    ${CMAKE_BINARY_DIR}/include
+)
+
+target_link_libraries(
+    UbuntuDownloader
+PRIVATE
+    ${Boost_LIBRARIES}
+    jsoncpp_lib
 )

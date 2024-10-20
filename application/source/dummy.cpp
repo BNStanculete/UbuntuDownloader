@@ -1,5 +1,6 @@
 #include "dummy.hpp"
 
-void cat::make_cute() {
-    
+int main(int argc, char** argv)
+{
+    return 0;
 }

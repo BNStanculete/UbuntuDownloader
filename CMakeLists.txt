@@ -30,7 +30,6 @@ include(InstallRequirements)
 include(ConfigureCompiler)
 include(SyncSubmodules)
 include(GNUInstallDirs)
-include(CreateLibrary)
 
 if(WIN32)
     include(GenerateExportHeader)
@@ -52,6 +51,8 @@ endif()
 
 find_package(Boost REQUIRED)
 find_package(jsoncpp REQUIRED)
+
+get_target_property(JSON_INC_PATH jsoncpp_lib INTERFACE_INCLUDE_DIRECTORIES)
 
 # Adding project targets
 # ----------------------
