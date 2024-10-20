@@ -19,7 +19,7 @@ jobs:
     - uses: actions/setup-python@master
   
     - name: Run cpplint
-      run: pip install cpplint && cpplint --extensions=in,cpp --exclude=externals --exclude=docs --recursive --quiet .
+      run: pip install cpplint && cpplint --extensions=in,cpp --exclude=externals --exclude=docs --linelength=120 --recursive --quiet .
 
   Build:
     needs: Precheck

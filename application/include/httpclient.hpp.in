@@ -13,11 +13,12 @@
 #include <boost/asio/connect.hpp>
 
 namespace beast = boost::beast;
-namespace http = boost::http;
+namespace http = boost::beast::http;
 namespace asio = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
-typedef HttpResponse = http::response<http::dynamic_content>;
+using HttpResponse = http::response<http::dynamic_body>;
+using HttpRequest = http::request<http::string_body>;
 
 namespace downloader {
 
@@ -37,8 +38,8 @@ class HttpClient {
 
     // --- Prevent copy & move construction ---
 
-    explicit HttpClient(const HTTPClient& other) = delete;
-    explicit HttpClient(HTTPClient&& other) = delete;
+    explicit HttpClient(const HttpClient& other) = delete;
+    explicit HttpClient(HttpClient&& other) = delete;
 
     // --- Prevent copy & move assignment
 

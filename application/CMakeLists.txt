@@ -9,7 +9,7 @@ foreach(HEADER ${EXECUTABLE_HEADERS})
 endforeach()
 
 add_executable(UbuntuDownloader
-    source/dummy.cpp
+    source/main.cpp
     source/httpclient.cpp
 )
 
