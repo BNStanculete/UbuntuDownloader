@@ -18,6 +18,8 @@ project(UbuntuDownloader
 option(BUILD_TESTS "Build the whole test suite" ON)
 option(BUILD_DOCS "Build the documentation" ON)
 
+set(Boost_USE_STATIC_LIBS ON)
+
 # Sourcing CMake modules
 # ----------------------
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/" ${CMAKE_MODULES_PATH})
