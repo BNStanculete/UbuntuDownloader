@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to UbuntuDownloader's documentation!
-===================================
+============================================
 
 .. toctree::
    :maxdepth: 2
@@ -22,5 +22,5 @@ Indices and tables
 Docs
 ====
 
-.. doxygenstruct:: cat
+.. doxygenclass:: downloader::HttpClient
    :members:

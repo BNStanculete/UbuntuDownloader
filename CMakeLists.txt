@@ -18,6 +18,8 @@ project(UbuntuDownloader
 option(BUILD_TESTS "Build the whole test suite" ON)
 option(BUILD_DOCS "Build the documentation" ON)
 
+set(Boost_USE_STATIC_LIBS ON)
+
 # Sourcing CMake modules
 # ----------------------
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/" ${CMAKE_MODULES_PATH})
@@ -30,7 +32,6 @@ include(InstallRequirements)
 include(ConfigureCompiler)
 include(SyncSubmodules)
 include(GNUInstallDirs)
-include(CreateLibrary)
 
 if(WIN32)
     include(GenerateExportHeader)
@@ -50,8 +51,14 @@ if(${BUILD_DOCS})
     find_package(Sphinx REQUIRED)
 endif()
 
-find_package(Boost REQUIRED)
-find_package(jsoncpp REQUIRED)
+find_package(Boost COMPONENTS date_time REQUIRED)
+
+# Building JSONcpp
+# -------------------
+add_subdirectory("${PROJECT_SOURCE_DIR}/externals/jsoncpp" "externals/jsoncpp")
+
+set_target_properties(jsoncpp_lib PROPERTIES FOLDER externals)
+get_target_property(JSON_INC_PATH jsoncpp_lib INTERFACE_INCLUDE_DIRECTORIES)
 
 # Adding project targets
 # ----------------------

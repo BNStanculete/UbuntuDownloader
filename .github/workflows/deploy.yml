@@ -1,0 +1,47 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  Build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: VS 2022,  os: windows-2022   }
+        - { name: VS 2019,  os: windows-2019   }
+        - { name: Linux,    os: ubuntu-latest  }
+        - { name: MacOS,    os: macos-latest   }
+
+    steps:
+    - uses: actions/checkout@master    
+
+    - name: Install dependencies
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.5
+      with:
+        boost_version: 1.73.0
+
+    - name: Configure CMake for Release
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Release" -DJSONCPP_WITH_TESTS=OFF
+      env:
+        BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+    - name: Building executable in Release mode
+      run: cmake --build ${{github.workspace}}/build --config Release
+
+    - name: Publishing package
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{matrix.platform.name}}
+        path: |
+          ${{github.workspace}}/bin
+          ${{github.workspace}}/lib
+          ${{github.workspace}}/include
+          ${{github.workspace}}/build/docs/sphinx
