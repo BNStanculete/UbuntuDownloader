@@ -22,5 +22,5 @@ Indices and tables
 Docs
 ====
 
-.. doxygenstruct:: cat
+.. doxygenclass:: downloader::HttpClient
    :members:

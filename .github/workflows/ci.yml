@@ -19,7 +19,7 @@ jobs:
     - uses: actions/setup-python@master
   
     - name: Run cpplint
-      run: pip install cpplint && cpplint --extensions=hpp.in,cpp --exclude=externals --recursive --quiet .
+      run: pip install cpplint && cpplint --extensions=in,cpp --exclude=externals --exclude=docs --recursive --quiet .
 
   Build:
     needs: Precheck
@@ -45,7 +45,7 @@ jobs:
         boost_version: 1.73.0
 
     - name: Configure CMake for Debug
-      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug"
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug" -DJSONCPP_WITH_TESTS=OFF
       env:
         BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
