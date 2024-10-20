@@ -22,10 +22,18 @@ jobs:
     steps:
     - uses: actions/checkout@master    
 
-    - name: Configure CMake for Debug
-      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE="Release"
+    - name: Installing dependencies
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.5
+      with:
+        boost_version: 1.73.0
 
-    - name: Building executable in Debug mode
+    - name: Configure CMake for Release
+      run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Release"
+      env:
+        BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+    - name: Building executable in Release mode
       run: cmake --build ${{github.workspace}}/build --config Release
 
     - name: Publishing package
@@ -36,4 +44,4 @@ jobs:
           ${{github.workspace}}/bin
           ${{github.workspace}}/lib
           ${{github.workspace}}/include
-          ${{github.workspace}}/docs
+          ${{github.workspace}}/build/docs/sphinx

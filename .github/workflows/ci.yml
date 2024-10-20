@@ -36,10 +36,18 @@ jobs:
         - { name: MacOS,    os: macos-latest   }
 
     steps:
-    - uses: actions/checkout@master    
+    - uses: actions/checkout@master
+
+    - name: Installing dependencies - Windows
+      id: install-boost
+      uses: MarkusJx/install-boost@v2.4.5
+      with:
+        boost_version: 1.73.0
 
     - name: Configure CMake for Debug
       run: cmake -B ${{github.workspace}}/build -DBUILD_TESTS=OFF -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug"
+      env:
+        BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
     - name: Building executable in Debug mode
       run: cmake --build ${{github.workspace}}/build --config Debug

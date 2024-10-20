@@ -2,3 +2,7 @@
 	path = externals/googletest
 	url = ../../google/googletest.git
 	branch = v1.14.0
+[submodule "externals/jsoncpp"]
+	path = externals/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
+	branch = master
