@@ -68,8 +68,10 @@ jobs:
     - name: Install GTest
       run: sudo apt-get update && sudo apt-get install libgtest-dev
 
-    - name: Configuring for SHARED libraries
+    - name: Configuring for Testing
       run: cmake -B ${{github.workspace}}/build -DBUILD_DOCS=OFF -DCMAKE_BUILD_TYPE="Debug"
+      env:
+        BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
-    - name: Building SHARED libraries and tests
+    - name: Building tests
       run: cmake --build ${{github.workspace}}/build --config Debug
