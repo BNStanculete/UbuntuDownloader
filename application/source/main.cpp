@@ -2,6 +2,8 @@
 
 #include <json/json.h>
 #include <iostream>
+#include <memory>
+#include <string>
 #include "httpclient.hpp"
 
 /*
