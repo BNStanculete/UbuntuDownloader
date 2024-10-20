@@ -51,7 +51,7 @@ if(${BUILD_DOCS})
     find_package(Sphinx REQUIRED)
 endif()
 
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS date_time REQUIRED)
 
 # Building JSONcpp
 # -------------------
