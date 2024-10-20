@@ -50,8 +50,12 @@ if(${BUILD_DOCS})
 endif()
 
 find_package(Boost REQUIRED)
-find_package(jsoncpp REQUIRED)
 
+# Building JSONcpp
+# -------------------
+add_subdirectory("${PROJECT_SOURCE_DIR}/externals/jsoncpp" "externals/jsoncpp")
+
+set_target_properties(jsoncpp_lib PROPERTIES FOLDER externals)
 get_target_property(JSON_INC_PATH jsoncpp_lib INTERFACE_INCLUDE_DIRECTORIES)
 
 # Adding project targets
