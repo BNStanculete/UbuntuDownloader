@@ -1,0 +1,86 @@
+// Copyright HVortex 2024.
+
+#pragma once
+
+#include <json/json.h>
+#include <string>
+#include <iostream>
+
+#include "IParser.hpp"
+
+class Parser : IParser {
+ public:
+    virtual ~Parser() = default;
+
+    explicit Parser(const std::string& jsonstring);
+
+    // --- Prevent copy & move construction ---
+
+    explicit Parser(const Parser& other) = delete;
+    explicit Parser(Parser&& other) = delete;
+
+    // --- Prevent copy & move assignment
+
+    Parser& operator= (const Parser& other) = delete;
+    Parser& operator= (Parser&& other) = delete;
+
+    /**
+     * @brief Prints all the supported Ubuntu releases.
+     * 
+     * The function will iterate through all the Ubuntu releases
+     * and print all those marked as 'supported'.
+     */
+    void printSupportedVersions() const override;
+
+    /**
+     * @brief Prints the latest Ubuntu LTS version
+     * 
+     * The function will iterate through all the Ubuntu releases
+     * and determine the latest release of Ubuntu LTS by checking
+     * the version of the release in the order: MAJOR > MINOR > PATCH.
+     */
+    void printLatestLTSVersion() const override;
+
+    /**
+     * @brief Prints the SHA256 Hash of the chosen Ubuntu version.
+     * 
+     * The function will iterate through all the Ubuntu releases
+     * and identify the given release and version. Then it will extract
+     * and print the SHA256 of the disk1.img.
+     * 
+     * @param release The desired release
+     * @param version The desired version
+     */
+    void printHashOfVersion(const std::string& release,
+                            const std::string& version) const override;
+
+ private:
+    Json::Value root;
+};
+
+/**
+ * @brief Iterate through a JSON file
+ * 
+ * This function starts from a desired node in the JSON object and iterates
+ * through all keys with key validity checking. If a key does not exist, the
+ * function will terminate the program with an error code.
+ * 
+ * @param node The node from where traversing begins
+ * @param key 1 or more keys to traverse
+ * 
+ * @returns The destination node in the JSON object
+ */
+template<class... keys> Json::Value traverseKeys(const Json::Value& node, keys& ... key) {
+    Json::Value result = node;
+
+    ([&] {
+        if (!result.isMember(key)) {
+            std::cout << "[ERR] Error while parsing JSON document.\n";
+            exit(1);
+        }
+
+        result = result[key];
+    } (), ...);
+
+    return result;
+}

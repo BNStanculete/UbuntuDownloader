@@ -1,0 +1,29 @@
+// Copyright HVortex 2024.
+
+#pragma once
+
+#include <string>
+
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/version.hpp>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/connect.hpp>
+
+namespace beast = boost::beast;
+namespace http = boost::beast::http;
+namespace asio = boost::asio;
+
+using HttpResponse = http::response<http::dynamic_body>;
+
+namespace downloader {
+
+class IHttpClient {
+ public:
+    virtual ~IHttpClient() = default;
+
+    virtual HttpResponse GET(const std::string&, const std::string&) = 0;
+};
+
+}  // namespace downloader

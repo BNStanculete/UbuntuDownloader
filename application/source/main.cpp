@@ -4,8 +4,8 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "httpclient.hpp"
-#include "functions.hpp"
+#include "Httpclient.hpp"
+#include "Parser.hpp"
 
 /*
 Possible arguments from the command line:
@@ -38,31 +38,17 @@ int main(int argc, char** argv) {
     }
 
     std::string string_response = beast::buffers_to_string(response.body().data());
-    std::istringstream stringStream(string_response);
-    std::string errors = "";
 
-    Json::Value root;
-    Json::CharReaderBuilder builder;
-
-    if (!Json::parseFromStream(builder, stringStream, &root, &errors)) {
-        std::cout << "[ERR] Could not parse JSON object received from remote server.\n";
-        std::cout << "[ERR] Error: " << errors << "\n";
-        return 1;
-    }
-
-    if (!root.isMember("products")) {
-        std::cout << "[ERR] Could not locate products in JSON file.\n";
-        return 1;
-    }
+    Parser parser = Parser(string_response);
 
     if (argc == 2) {
         if (strcmp(argv[1], "-l") == 0 || strcmp(argv[1], "--list") == 0) {
             // Print supported versions
-            printSupportedVersions(root["products"]);
+            parser.printSupportedVersions();
 
         } else if (strcmp(argv[1], "-c") == 0 || strcmp(argv[1], "--current") == 0) {
             // Print the latest Ubuntu LTS version
-            printLatestLTSVersion(root["products"]);
+            parser.printLatestLTSVersion();
 
         } else {
             std::cout << "[ERR] Invalid argument.\n";
@@ -85,7 +71,7 @@ int main(int argc, char** argv) {
             subversion = desired_release.substr(delimiter_pos + 1, desired_release.length() - delimiter_pos - 1);
             desired_release = desired_release.substr(0, delimiter_pos);
 
-            printHashOfNode(root["products"], desired_release, subversion);
+            parser.printHashOfVersion(desired_release, subversion);
         } else {
             std::cout << "[ERR] Invalid argument.\n";
             std::cout << "[INF] Please run UbuntuDownloader -h for a list of arguments.\n";

@@ -1,10 +1,33 @@
 // Copyright HVortex 2024.
 
-#include "functions.hpp"
+#include "Parser.hpp"
+
 #include <json/json.h>
+
+#include <iostream>
 #include <string>
 
-void printSupportedVersions(const Json::Value& root) {
+Parser::Parser(const std::string& jsonstring) {
+    std::istringstream stringStream(jsonstring);
+    std::string errors = "";
+
+    Json::CharReaderBuilder builder;
+
+    if (!Json::parseFromStream(builder, stringStream, &root, &errors)) {
+        std::cout << "[ERR] Could not parse JSON object received from remote server.\n";
+        std::cout << "[ERR] Error: " << errors << "\n";
+        return;
+    }
+
+    if (!root.isMember("products")) {
+        std::cout << "[ERR] Could not locate products in JSON file.\n";
+        return;
+    }
+
+    root = root["products"];
+}
+
+void Parser::printSupportedVersions() const {
     std::cout << "All supported Ubuntu releases:\n";
 
     for (const std::string& key : root.getMemberNames()) {
@@ -17,7 +40,7 @@ void printSupportedVersions(const Json::Value& root) {
     }
 }
 
-void printLatestLTSVersion(const Json::Value& root) {
+void Parser::printLatestLTSVersion() const {
     std::string latest_version = "";
     std::string version = "";
 
@@ -83,9 +106,8 @@ void printLatestLTSVersion(const Json::Value& root) {
     std::cout << "Latest Ubuntu LTS version: " << latest_version << "\n";
 }
 
-void printHashOfNode(const Json::Value& root,
-                     const std::string& release,
-                     const std::string& version) {
+void Parser::printHashOfVersion(const std::string& release,
+                                const std::string& version) const {
     std::cout << "Looking for release " << release << " version " << version << "\n";
 
     for (const std::string& key : root.getMemberNames()) {
