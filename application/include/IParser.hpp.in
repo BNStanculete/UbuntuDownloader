@@ -1,0 +1,15 @@
+// Copyright HVortex 2024.
+
+#pragma once
+
+#include <json/json.h>
+#include <string>
+
+class IParser {
+ public:
+    virtual ~IParser() = default;
+
+    virtual void printSupportedVersions() const = 0;
+    virtual void printLatestLTSVersion() const = 0;
+    virtual void printHashOfVersion(const std::string&, const std::string&) const = 0;
+};
