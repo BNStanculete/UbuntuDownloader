@@ -1,0 +1,70 @@
+// Copyright HVortex 2024
+
+#pragma once
+
+#include <json/json.h>
+#include <iostream>
+#include <string>
+
+/**
+ * @brief Prints all the supported Ubuntu releases.
+ * 
+ * The function will iterate through all the Ubuntu releases
+ * and print all those marked as 'supported'.
+ * 
+ * @param root The root of the JSON document
+ */
+void printSupportedVersions(const Json::Value& root);
+
+/**
+ * @brief Prints the latest Ubuntu LTS version
+ * 
+ * The function will iterate through all the Ubuntu releases
+ * and determine the latest release of Ubuntu LTS by checking
+ * the version of the release in the order: MAJOR > MINOR > PATCH.
+ * 
+ * @param root The root of the JSON document
+ */
+void printLatestLTSVersion(const Json::Value& root);
+
+/**
+ * @brief Prints the SHA256 Hash of the chosen Ubuntu version.
+ * 
+ * The function will iterate through all the Ubuntu releases
+ * and identify the given release and version. Then it will extract
+ * and print the SHA256 of the disk1.img.
+ * 
+ * @param root The root of the JSON document
+ * @param release The desired release
+ * @param version The desired version
+ */
+void printHashOfNode(const Json::Value& root,
+                     const std::string& release,
+                     const std::string& version);
+
+/**
+ * @brief Iterate through a JSON file
+ * 
+ * This function starts from a desired node in the JSON object and iterates
+ * through all keys with key validity checking. If a key does not exist, the
+ * function will terminate the program with an error code.
+ * 
+ * @param node The node from where traversing begins
+ * @param key 1 or more keys to traverse
+ * 
+ * @returns The destination node in the JSON object
+ */
+template<class... keys> Json::Value traverseKeys(const Json::Value& node, keys& ... key) {
+    Json::Value result = node;
+
+    ([&] {
+        if (!result.isMember(key)) {
+            std::cout << "[ERR] Error while parsing JSON document.\n";
+            exit(1);
+        }
+
+        result = result[key];
+    } (), ...);
+
+    return result;
+}

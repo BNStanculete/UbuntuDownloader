@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include "httpclient.hpp"
+#include "functions.hpp"
 
 /*
 Possible arguments from the command line:
@@ -12,8 +13,16 @@ Possible arguments from the command line:
     -c  --current               Print the current ubuntu version
     -h  --hash      RELEASE     Print the sha256 hash of desired release
 */
-
 int main(int argc, char** argv) {
+    if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+        std::cout << "UbuntuDownloader Usage:\n";
+        std::cout << "\t -h\t\t --help\t\t\t Prints this menu.\n";
+        std::cout << "\t -l\t\t --list\t\t\t Lists all supported releases.\n";
+        std::cout << "\t -c\t\t --current\t\t Lists the latest (current) Ubuntu LTS.\n";
+        std::cout << "\t -H [VERSION]\t --Hash [VERSION]\t Prints the SHA256 hash of the desired version.\n";
+        return 0;
+    }
+
     std::shared_ptr<boost::asio::io_context> ioc =
         std::make_shared<boost::asio::io_context>();
 
@@ -41,87 +50,27 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    if (!root.isMember("products")) {
+        std::cout << "[ERR] Could not locate products in JSON file.\n";
+        return 1;
+    }
+
     if (argc == 2) {
         if (strcmp(argv[1], "-l") == 0 || strcmp(argv[1], "--list") == 0) {
             // Print supported versions
+            printSupportedVersions(root["products"]);
 
-            std::cout << "All supported Ubuntu releases:\n";
-            for (const std::string& key : root["products"].getMemberNames()) {
-                if (key.rfind("amd64") == std::string::npos ||
-                    !root["products"][key]["supported"].asBool()) {
-                    continue;
-                }
-
-                std::cout << "\t- " << root["products"][key]["release_title"] << "\n";
-            }
         } else if (strcmp(argv[1], "-c") == 0 || strcmp(argv[1], "--current") == 0) {
             // Print the latest Ubuntu LTS version
+            printLatestLTSVersion(root["products"]);
 
-            std::string latest_version = "";
-            std::string version = "";
-            for (const std::string& key : root["products"].getMemberNames()) {
-                if (key.rfind("amd64") == std::string::npos ||
-                    !root["products"][key]["supported"].asBool() ||
-                    root["products"][key]["release_title"].asString().rfind("LTS") == std::string::npos) {
-                    continue;
-                }
-
-                version = root["products"][key]["version"].asString();
-                if (latest_version == "") {
-                    latest_version = version;
-                } else {
-                    // Compare the two versions
-                    // ---
-                    // For that we assume that the versions are split into subversions
-                    // and that the MAJOR subversion is first, followed by MINOR , PATCH, etc.
-
-                    uint32_t version1 = 0, version2 = 0;
-                    uint32_t index = 0;
-
-                    while (index < latest_version.length()) {
-                        if (latest_version[index] == '.') {
-                            // Compare current subversion
-
-                            if (version[index] != '.' || version1 < version2) {
-                                // Definetely found version is newer, as subversion is biggere.
-                                latest_version = version;
-                                break;
-                            }
-
-                            if (version1 > version2) {
-                                // Current subversion is greater, no need to proceed further.
-                                break;
-                            }
-
-                            version1 = 0;
-                            version2 = 0;
-                        }
-
-                        if (index >= version.length() || version[index] == '.') {
-                            // We have a number in latest version and end of string / terminator
-                            // in current version.
-
-                            // as such latest version is newer
-                            break;
-                        }
-
-                        version1 = version1 * 10 + static_cast<uint32_t>(latest_version[index] - '0');
-                        version2 = version2 * 10 + static_cast<uint32_t>(version[index] - '0');
-                        index += 1;
-                    }
-
-                    if (latest_version != version && index < version.length()) {
-                        // We didn't update the latest version
-                        // and we still have characters in current version
-                        latest_version = version;
-                    }
-                }
-            }
-
-            std::cout << "Latest Ubuntu LTS version: " << latest_version << "\n";
+        } else {
+            std::cout << "[ERR] Invalid argument.\n";
+            std::cout << "[INF] Please run UbuntuDownloader -h for a list of arguments.\n";
+            return 1;
         }
     } else if (argc == 3) {
-        if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--hash") == 0) {
+        if (strcmp(argv[1], "-H") == 0 || strcmp(argv[1], "--Hash") == 0) {
             // Print the hash of the desired release
 
             std::string desired_release(argv[2]);
@@ -136,28 +85,15 @@ int main(int argc, char** argv) {
             subversion = desired_release.substr(delimiter_pos + 1, desired_release.length() - delimiter_pos - 1);
             desired_release = desired_release.substr(0, delimiter_pos);
 
-            std::cout << "Looking for release " << desired_release << " version " << subversion << "\n";
-
-            for (const std::string& key : root["products"].getMemberNames()) {
-                if (key.rfind("amd64") == std::string::npos ||
-                    root["products"][key]["version"].asString().find(desired_release) == std::string::npos) {
-                    continue;
-                }
-
-                std::cout << "Hash of version: " << root["products"][key]["release_title"].asString() << ": ";
-
-                Json::Value node = root["products"][key]["versions"];
-
-                if (!node.isMember(subversion)) {
-                    std::cout << "NON-EXISTENT VERSION.\n";
-                    return 0;
-                }
-
-                std::cout << node[subversion]["items"]["disk1.img"]["sha256"].asString() << "\n";
-            }
+            printHashOfNode(root["products"], desired_release, subversion);
+        } else {
+            std::cout << "[ERR] Invalid argument.\n";
+            std::cout << "[INF] Please run UbuntuDownloader -h for a list of arguments.\n";
+            return 1;
         }
     } else {
         std::cout << "[ERR] Invalid number of arguments.\n";
+        std::cout << "[INF] Please run UbuntuDownloader -h for a list of arguments.\n";
         return 1;
     }
 
