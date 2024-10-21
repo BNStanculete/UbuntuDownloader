@@ -18,7 +18,7 @@ cmake --build build --config Release
 cmake --install application
 ```
 
-The executable will be then located in build/bin. If you want to build the documentation, first
+The executable will be then located in the bin directory. If you want to build the documentation, first
 make sure to install the following additional prerequisites:
 - Python3 & pip
 - Doxygen

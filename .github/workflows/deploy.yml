@@ -37,7 +37,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config Release
 
     - name: Installing package
-      run: cmake --install application
+      run: cmake --install ${{github.workspace}}/build/application
 
     - name: Publishing package
       uses: actions/upload-artifact@master
