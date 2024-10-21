@@ -15,7 +15,7 @@ For a quick (production) build run
 ```
 cmake . -B build -DCMAKE_BUILD_TYPE="Release" -DJSONCPP_WITH_TESTS=OFF -DBUILD_DOCS=OFF -DBUILD_TESTS=OFF
 cmake --build build --config Release
-cmake --install application
+cmake --install build/application
 ```
 
 The executable will be then located in the bin directory. If you want to build the documentation, first
