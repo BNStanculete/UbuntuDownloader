@@ -13,12 +13,18 @@ As an initial step make sure to download and install the library for your OS.
 
 For a quick (production) build run
 ```
-cmake . -B build -DCMAKE_BUILD_TYPE="Release" -DJSONCPP_WITH_TESTS=OFF
+cmake . -B build -DCMAKE_BUILD_TYPE="Release" -DJSONCPP_WITH_TESTS=OFF -DBUILD_DOCS=OFF -DBUILD_TESTS=OFF
 cmake --build build --config Release
 cmake --install application
 ```
 
-The executable will be then located in build/bin.
+The executable will be then located in build/bin. If you want to build the documentation, first
+make sure to install the following additional prerequisites:
+- Python3 & pip
+- Doxygen
+
+After that, make sure to run ```pip install -r docs/requirements.txt``` to have all the necessary
+packages for Sphinx to run. Then you follow the build steps above, but remove the ```-DBUILD_DOCS=OFF``` option.
 
 ## Usage
 
